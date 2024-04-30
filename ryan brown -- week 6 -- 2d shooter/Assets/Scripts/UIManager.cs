@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     gameManager _gm;
     public TMP_Text score_txt;
     public GameObject[] hearts;
+    public Slider volCtrlSlider;
+    public GameObject backgroundMusic;
 
 
     // Start is called before the first frame update
@@ -33,5 +36,7 @@ public class UIManager : MonoBehaviour
         {
             hearts[0].SetActive(false);
         }
+
+        backgroundMusic.GetComponent<AudioSource>().volume = volCtrlSlider.value;
     }
 }

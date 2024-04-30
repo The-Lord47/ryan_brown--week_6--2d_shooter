@@ -6,15 +6,20 @@ public class bladeScript : MonoBehaviour
 {
     Camera _mainCam;
     bool slicing;
+    bool canMakeSound = true;
     Collider bladeCollider;
     TrailRenderer bladeTrail;
 
     public Vector3 bladeDirection;
     public float minSliceVelocity = 0.01f;
 
+    audioManager _am;
+
     // Start is called before the first frame update
     void Start()
     {
+        _am = FindObjectOfType<audioManager>();
+
         bladeCollider = GetComponent<Collider>();
         _mainCam = Camera.main;
         bladeTrail = GetComponentInChildren<TrailRenderer>();
@@ -44,6 +49,12 @@ public class bladeScript : MonoBehaviour
         else if (slicing)
         {
             ContinueSlicing();
+        }
+
+        if (bladeDirection.magnitude / Time.deltaTime > 50 && canMakeSound)
+        {
+            StartCoroutine(sliceSound());
+            canMakeSound = false;
         }
     }
 
@@ -75,6 +86,14 @@ public class bladeScript : MonoBehaviour
         bladeCollider.enabled = velocity > minSliceVelocity;
 
         transform.position = newPos;
+    }
+
+    IEnumerator sliceSound()
+    {
+        _am.bladeSFX.GetComponent<AudioSource>().pitch = Random.Range(0.8f, 1.2f);
+        _am.bladeSFX.GetComponent<AudioSource>().PlayOneShot(_am.bladeSFXclips[Random.Range(0, _am.bladeSFXclips.Length)]);
+        yield return new WaitForSeconds(0.5f);
+        canMakeSound = true;
     }
 
 }

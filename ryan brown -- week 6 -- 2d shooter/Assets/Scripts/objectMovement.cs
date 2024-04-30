@@ -13,6 +13,7 @@ public class objectMovement : MonoBehaviour
     Rigidbody rb;
     gameManager _gm;
     bladeScript _bs;
+    audioManager _am;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +21,7 @@ public class objectMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         _gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<gameManager>();
         _bs = GameObject.FindGameObjectWithTag("Player").GetComponent<bladeScript>();
+        _am = FindObjectOfType<audioManager>();
 
         rb.AddForce(RandomForce(), ForceMode.Impulse);
         rb.AddTorque(RandomTorque(), RandomTorque(), RandomTorque(), ForceMode.Impulse);
@@ -67,10 +69,14 @@ public class objectMovement : MonoBehaviour
                     Instantiate(_gm.splatterFXs[2], transform.position, Quaternion.LookRotation(_bs.bladeDirection), GameObject.Find("SplatterFX").transform);
                 }
                 ++_gm.score;
+                _am.fruitSFX.GetComponent<AudioSource>().pitch = Random.Range(0.8f, 1.2f);
+                _am.fruitSFX.GetComponent<AudioSource>().PlayOneShot(_am.fruitSFXclips[Random.Range(0, _am.fruitSFXclips.Length)]);
             }
             else if(gameObject.CompareTag("bad"))
             {
                 --_gm.lives;
+                Instantiate(_gm.splatterFXs[3], transform.position, Quaternion.Euler(-180,0,0), GameObject.Find("SplatterFX").transform);
+                _am.bombSFX.GetComponent<AudioSource>().PlayOneShot(_am.bombSFXclip);
             }
             Destroy(gameObject);
         }
