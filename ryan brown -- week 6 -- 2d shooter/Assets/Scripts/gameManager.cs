@@ -11,6 +11,9 @@ public class gameManager : MonoBehaviour
 
     public int score;
     public int lives = 3;
+    public bool gameActive = true;
+    public bool gamePaused;
+    public bool gameOver;
 
     // Start is called before the first frame update
     void Start()
@@ -21,7 +24,19 @@ public class gameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Escape) && gamePaused == false)
+        {
+            gamePaused = true;
+        }
+        else if(Input.GetKeyDown(KeyCode.Escape) && gamePaused == true)
+        {
+            gamePaused = false;
+        }
+
+        if(lives <= 0)
+        {
+            gameOver = true;
+        }
     }
 
     IEnumerator SpawnTarget()
