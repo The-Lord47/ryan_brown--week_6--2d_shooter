@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,7 +12,14 @@ public class UIManager : MonoBehaviour
     public TMP_Text score_txt;
     public GameObject[] hearts;
     public Slider volCtrlSlider;
+    public Slider SFXVolCtrlSlider;
     public GameObject backgroundMusic;
+    public GameObject fruitSFX;
+    public GameObject bladeSFX;
+    public GameObject bombSFX;
+    float fruitSFXBaseVol;
+    float bladeSFXBaseVol;
+    float bombSFXBaseVol;
     public GameObject pauseScreen;
     public GameObject gameoverScreen;
     public Image flashbang;
@@ -23,7 +31,12 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         volCtrlSlider.value = PlayerPrefs.GetFloat("background_music_vol");
+        SFXVolCtrlSlider.value = PlayerPrefs.GetFloat("SFX_vol");
         _gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<gameManager>();
+
+        fruitSFXBaseVol = fruitSFX.GetComponent<AudioSource>().volume;
+        bladeSFXBaseVol = bladeSFX.GetComponent<AudioSource>().volume;
+        bombSFXBaseVol = bombSFX.GetComponent<AudioSource>().volume;
     }
 
     // Update is called once per frame
@@ -50,6 +63,14 @@ public class UIManager : MonoBehaviour
             PlayerPrefs.SetFloat("background_music_vol", volCtrlSlider.value);
         }
         backgroundMusic.GetComponent<AudioSource>().volume = volCtrlSlider.value;
+
+        if (PlayerPrefs.GetFloat("SFX_vol") != SFXVolCtrlSlider.value)
+        {
+            PlayerPrefs.SetFloat("SFX_vol", SFXVolCtrlSlider.value);
+        }
+        fruitSFX.GetComponent<AudioSource>().volume = SFXVolCtrlSlider.value * fruitSFXBaseVol;
+        bladeSFX.GetComponent<AudioSource>().volume = SFXVolCtrlSlider.value * bladeSFXBaseVol;
+        bombSFX.GetComponent<AudioSource>().volume = SFXVolCtrlSlider.value * bombSFXBaseVol;
 
 
         if (_gm.gamePaused)
@@ -124,5 +145,11 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void quitGame(int scene)
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(scene);
     }
 }

@@ -7,7 +7,6 @@ public class gameManager : MonoBehaviour
 {
     public List<GameObject> targets;
     public GameObject[] splatterFXs;
-    float spawnRate = 0.5f;
 
     public int score;
     public int lives = 3;
@@ -15,9 +14,12 @@ public class gameManager : MonoBehaviour
     public bool gamePaused;
     public bool gameOver;
 
+    difficultyManager _dm;
+
     // Start is called before the first frame update
     void Start()
     {
+        _dm = FindObjectOfType<difficultyManager>();
         StartCoroutine(SpawnTarget());
     }
 
@@ -43,7 +45,7 @@ public class gameManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(spawnRate);
+            yield return new WaitForSeconds(float.Parse(_dm.difficulty[_dm.difficultyIndex % 4][1]));
             int targetIndex = Random.Range(0, targets.Count);
             Instantiate(targets[targetIndex], transform);
         }
