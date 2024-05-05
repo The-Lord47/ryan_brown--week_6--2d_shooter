@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class difficultyManager : MonoBehaviour
 {
+    //--------------------PUBLIC VARIABLES--------------------
+    [Header("Passables")]
     public int difficultyIndex = 4;
     public string[][] difficulty = new string[][]
     {
@@ -13,15 +15,17 @@ public class difficultyManager : MonoBehaviour
         new string[]{ "Insane", "0.25" },
     };
 
-    // Start is called before the first frame update
+    //--------------------START--------------------
     void Start()
     {
+        //loads the difficulty from the playerpreferences
         difficultyIndex = PlayerPrefs.GetInt("difficultyIndex");
     }
 
-    // Update is called once per frame
+    //--------------------UPDATE--------------------
     void Update()
     {
+        //updates the diffiuclty if it is ever changed
         if(PlayerPrefs.GetInt("difficultyIndex") != difficultyIndex)
         {
             PlayerPrefs.SetInt("difficultyIndex", difficultyIndex);

@@ -1,15 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using TMPro;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    gameManager _gm;
+    //--------------------PUBLIC VARIABLES--------------------
+    [Header("References")]
     public TMP_Text score_txt;
     public TMP_Text combo_txt;
     public GameObject[] hearts;
@@ -19,37 +17,49 @@ public class UIManager : MonoBehaviour
     public GameObject fruitSFX;
     public GameObject bladeSFX;
     public GameObject bombSFX;
-    float fruitSFXBaseVol;
-    float bladeSFXBaseVol;
-    float bombSFXBaseVol;
     public GameObject pauseScreen;
     public GameObject gameoverScreen;
     public GameObject fadeInPanel;
     public Image flashbang;
-    public bool gameoverTriggered;
 
+    //--------------------PRIVATE VARIABLES--------------------
+    gameManager _gm;
+    float fruitSFXBaseVol;
+    float bladeSFXBaseVol;
+    float bombSFXBaseVol;
+    bool gameoverTriggered;
 
-    // Start is called before the first frame update
+    //--------------------START--------------------
     void Start()
     {
+        //sets timescale to 1 in case it was on 0
         Time.timeScale = 1f;
+        //sets the volume control slider to the value stored in player prefs (last used)
         volCtrlSlider.value = PlayerPrefs.GetFloat("background_music_vol");
+        //does the same for the sfx volume control slider
         SFXVolCtrlSlider.value = PlayerPrefs.GetFloat("SFX_vol");
+
+        //references the game manager
         _gm = GameObject.FindGameObjectWithTag("GameController").GetComponent<gameManager>();
 
+        //accesses audio sources to play oneshots
         fruitSFXBaseVol = fruitSFX.GetComponent<AudioSource>().volume;
         bladeSFXBaseVol = bladeSFX.GetComponent<AudioSource>().volume;
         bombSFXBaseVol = bombSFX.GetComponent<AudioSource>().volume;
 
+        //triggers the fade in
         fadeInPanel.GetComponent<Animator>().SetTrigger("fadeIn");
     }
 
-    // Update is called once per frame
+    //--------------------UPDATE--------------------
     void Update()
     {
+        //updates score and combo text every fram
         score_txt.text = "Score: " + _gm.score;
+            //combo tracker works by increasing the combo multiplier by one for every 10 food hit, resets on bomb hit
         combo_txt.text = "Combo: " + Mathf.FloorToInt((_gm.comboTracker + 10) / 10) + "x";
 
+        //manages the heart icons on the screen
         if (_gm.lives < 3)
         {
             hearts[2].SetActive(false);
@@ -63,7 +73,7 @@ public class UIManager : MonoBehaviour
             hearts[0].SetActive(false);
         }
 
-        
+        //manages the background music and the sfx volumes using the sliders in the pause menu
         if(PlayerPrefs.GetFloat("background_music_vol") != volCtrlSlider.value)
         {
             PlayerPrefs.SetFloat("background_music_vol", volCtrlSlider.value);
@@ -78,7 +88,7 @@ public class UIManager : MonoBehaviour
         bladeSFX.GetComponent<AudioSource>().volume = SFXVolCtrlSlider.value * bladeSFXBaseVol;
         bombSFX.GetComponent<AudioSource>().volume = SFXVolCtrlSlider.value * bombSFXBaseVol;
 
-
+        //controls the game pausing
         if (_gm.gamePaused)
         {
             gamePause();
@@ -88,6 +98,7 @@ public class UIManager : MonoBehaviour
             gameUnPause();
         }
 
+        //makes it so gameover is only triggered once
         if (_gm.gameOver && !gameoverTriggered)
         {
             gameoverTriggered = true;
@@ -95,6 +106,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
+
+    //--------------------GAME PAUSE--------------------
     private void gamePause()
     {
         backgroundMusic.GetComponent<AudioSource>().Pause();
@@ -104,7 +117,8 @@ public class UIManager : MonoBehaviour
             Time.timeScale = 0f;
         }
     }
-    
+
+    //--------------------GAME UNPAUSE--------------------
     private void gameUnPause()
     {
         backgroundMusic.GetComponent<AudioSource>().UnPause();
@@ -115,26 +129,29 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    //--------------------PAUSE BUTTON--------------------
     public void buttonGamePause()
     {
-        
         _gm.gamePaused = true;
     }
 
+    //--------------------UNPAUSE BUTTON--------------------
     public void buttonGameUnPause()
     {
-        
         _gm.gamePaused = false;
     }
 
+    //--------------------GAME OVER SEQUENCE--------------------
     IEnumerator gameOverSequence()
     {
+        //stops the background music and activates the gameover screen
         backgroundMusic.GetComponent<AudioSource>().Stop();
         gameoverScreen.SetActive(true);
 
         float elapsed = 0f;
         float duration = 3f;
         
+        //fades out a flashbang when game over triggers and slows down the game time
         while (elapsed < duration)
         {
             float t = Mathf.Clamp01(elapsed / duration);
@@ -147,12 +164,14 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    //--------------------RESTART--------------------
     public void restartGame()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    //--------------------QUIT GAME--------------------
     public void quitGame(int scene)
     {
         Time.timeScale = 1f;
@@ -160,6 +179,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(quitGameFade(scene));
     }
 
+    //--------------------GMAE QUIT FADE--------------------
     IEnumerator quitGameFade(int scene)
     {
         fadeInPanel.GetComponent<Animator>().SetTrigger("fadeOut");
