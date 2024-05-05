@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using TMPro;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ public class UIManager : MonoBehaviour
 {
     gameManager _gm;
     public TMP_Text score_txt;
+    public TMP_Text combo_txt;
     public GameObject[] hearts;
     public Slider volCtrlSlider;
     public Slider SFXVolCtrlSlider;
@@ -22,6 +24,7 @@ public class UIManager : MonoBehaviour
     float bombSFXBaseVol;
     public GameObject pauseScreen;
     public GameObject gameoverScreen;
+    public GameObject fadeInPanel;
     public Image flashbang;
     public bool gameoverTriggered;
 
@@ -37,14 +40,17 @@ public class UIManager : MonoBehaviour
         fruitSFXBaseVol = fruitSFX.GetComponent<AudioSource>().volume;
         bladeSFXBaseVol = bladeSFX.GetComponent<AudioSource>().volume;
         bombSFXBaseVol = bombSFX.GetComponent<AudioSource>().volume;
+
+        fadeInPanel.GetComponent<Animator>().SetTrigger("fadeIn");
     }
 
     // Update is called once per frame
     void Update()
     {
         score_txt.text = "Score: " + _gm.score;
+        combo_txt.text = "Combo: " + Mathf.FloorToInt((_gm.comboTracker + 10) / 10) + "x";
 
-        if(_gm.lives < 3)
+        if (_gm.lives < 3)
         {
             hearts[2].SetActive(false);
         }
@@ -150,6 +156,14 @@ public class UIManager : MonoBehaviour
     public void quitGame(int scene)
     {
         Time.timeScale = 1f;
+        _gm.gamePaused = false;
+        StartCoroutine(quitGameFade(scene));
+    }
+
+    IEnumerator quitGameFade(int scene)
+    {
+        fadeInPanel.GetComponent<Animator>().SetTrigger("fadeOut");
+        yield return new WaitForSeconds(1);
         SceneManager.LoadScene(scene);
     }
 }

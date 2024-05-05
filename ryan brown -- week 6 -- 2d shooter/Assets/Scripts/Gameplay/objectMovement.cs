@@ -68,13 +68,15 @@ public class objectMovement : MonoBehaviour
                 {
                     Instantiate(_gm.splatterFXs[2], transform.position, Quaternion.LookRotation(_bs.bladeDirection), GameObject.Find("SplatterFX").transform);
                 }
-                ++_gm.score;
+                _gm.score += Mathf.FloorToInt((_gm.comboTracker+10)/10);
+                ++_gm.comboTracker;
                 _am.fruitSFX.GetComponent<AudioSource>().pitch = Random.Range(0.8f, 1.2f);
                 _am.fruitSFX.GetComponent<AudioSource>().PlayOneShot(_am.fruitSFXclips[Random.Range(0, _am.fruitSFXclips.Length)]);
             }
             else if(gameObject.CompareTag("bad"))
             {
                 --_gm.lives;
+                _gm.comboTracker = 0;
                 Instantiate(_gm.splatterFXs[3], transform.position, Quaternion.Euler(-180,0,0), GameObject.Find("SplatterFX").transform);
                 _am.bombSFX.GetComponent<AudioSource>().PlayOneShot(_am.bombSFXclip);
             }

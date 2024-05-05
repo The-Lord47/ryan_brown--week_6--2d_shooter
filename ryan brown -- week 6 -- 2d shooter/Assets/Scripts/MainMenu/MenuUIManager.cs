@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using TMPro.EditorUtilities;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,7 +12,9 @@ public class MenuUIManager : MonoBehaviour
     public GameObject titleScreen;
     public GameObject mainMenu;
     public GameObject optionsMenu;
+    public GameObject howToPlayMenu;
     public TMP_Text difficulty_txt;
+    public GameObject fadeOutPanel;
     difficultyManager _dm;
 
     // Start is called before the first frame update
@@ -20,6 +23,7 @@ public class MenuUIManager : MonoBehaviour
         Time.timeScale = 1f;
         StartCoroutine(credits());
         _dm = FindObjectOfType<difficultyManager>();
+        fadeOutPanel.GetComponent<Animator>().SetTrigger("fadeIn");
     }
 
     // Update is called once per frame
@@ -40,6 +44,13 @@ public class MenuUIManager : MonoBehaviour
 
     public void startButton(int scene)
     {
+        StartCoroutine(startFadeOut(scene));
+    }
+
+    IEnumerator startFadeOut(int scene)
+    {
+        fadeOutPanel.GetComponent<Animator>().SetTrigger("fadeOut");
+        yield return new WaitForSeconds(1);
         SceneManager.LoadScene(scene);
     }
 
@@ -49,10 +60,20 @@ public class MenuUIManager : MonoBehaviour
         optionsMenu.SetActive(true);
     }
 
+    public void howToPlayButton()
+    {
+        howToPlayMenu.SetActive(true);
+    }
+
     public void optionsBackButton()
     {
         mainMenu.SetActive(true);
         optionsMenu.SetActive(false);
+    }
+
+    public void howToPlayBackButton()
+    {
+        howToPlayMenu.SetActive(false);
     }
 
     public void difficultyButton()

@@ -13,6 +13,7 @@ public class gameManager : MonoBehaviour
     public bool gameActive = true;
     public bool gamePaused;
     public bool gameOver;
+    public int comboTracker;
 
     difficultyManager _dm;
 
